@@ -29,7 +29,7 @@ class OuvidoriaController extends Controller
 
             return response()->json($response);
         } catch (\Exception $e){
-            return response()->json([]);
+            return response()->json(['success' => 0, 'error' => $e->getMessage()]);
         }
     }
 }
