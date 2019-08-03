@@ -21,10 +21,15 @@ class OuvidoriaController extends Controller
 
     /**
      * @param Request $request
+     * @return array|\Illuminate\Http\JsonResponse
      */
     public function ouvidoriaMockup(Request $request){
-        $response = $this->ouvidoriaRepository->pdfMock();
+        try {
+            $response = $this->ouvidoriaRepository->pdfMock();
 
-        return $response;
+            return response()->json($response);
+        } catch (\Exception $e){
+            return response()->json([]);
+        }
     }
 }

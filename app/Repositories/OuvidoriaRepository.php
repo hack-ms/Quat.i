@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Utils\Common;
+use App\Utils\ImagemUtil;
 use App\Utils\OuvidoriaPdf;
 use Carbon\Carbon;
 
@@ -10,6 +12,10 @@ use Carbon\Carbon;
  */
 class OuvidoriaRepository
 {
+    /**
+     * @return array
+     * @throws \Exception
+     */
     public function pdfMock()
     {
         $file = new OuvidoriaPdf('P','mm','A4');
@@ -19,6 +25,7 @@ class OuvidoriaRepository
         $file->ln(10);
 
         $file->SetFont('Times','B',14);
+        $file->setFillColor(230,230,230);
         $file->Cell(190,10,utf8_decode('Obrigado pela sua participação!'), 0 ,10, 'L');
 
         $file->SetFont('Times','',12);
@@ -59,7 +66,16 @@ class OuvidoriaRepository
         $file->SetFont('Times','',12);
         $file->Cell(190,0,utf8_decode('Acesso o sistema (com seu usuário e senha) e consulte todas as manifestações que você cadastrou no sistema'), 0 ,1, 'L');
 
-        $file->Output();
-        exit();
+        $caminho = storage_path('app/public/tmp/') . md5(microtime()) . '.pdf';
+
+        $file->Output($caminho, 'F');
+
+        if(!file_exists($caminho)){
+            Common::setError('Houve um erro ao gerar o arquivo!');
+        }
+
+        $urlBase64 = (new ImagemUtil($caminho))->getUrlBase64();
+
+        return ['success' => 1, 'arquivo' => $urlBase64];
     }
 }
